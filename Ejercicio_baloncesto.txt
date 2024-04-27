@@ -1,0 +1,43 @@
+CREATE TABLE equipos (
+    codE VARCHAR2(3) PRIMARY KEY,
+    localidad VARCHAR2(25) NOT NULL ,
+    nombreE VARCHAR2(12) NOT NULL UNIQUE,
+    entrenador VARCHAR2(25) NOT NULL,
+    fecha_crea DATE DEFAULT sysdate
+    
+);
+CREATE TABLE jugador (
+    codJ VARCHAR2(3) PRIMARY KEY,
+    nombreJ VARCHAR2(12) NOT NULL, --SIN APELLIDOS
+    codE REFERENCES equipos(codE) NOT NULL --En caso de que se fusionen
+);
+CREATE TABLE encuentros (
+    EVisitante REFERENCES equipos(codE),
+    ELocal REFERENCES equipos(codE),
+    PLocal INT DEFAULT 0 CHECK(PLocal >= 0 ) ,--Lo minimo para jugar
+    PVisititante INT DEFAULT 0 CHECK(PVisititante >= 0 ) ,
+    fecha date DEFAULT sysdate,
+    PRIMARY KEY(ELocal,EVisitante)
+    
+);
+--CLAVE DE LA AGREGACION: seria la  clave de encuentros (cod_el,cod_ev)
+
+CREATE TABLE faltas (
+    codJ REFERENCES jugador(codJ),
+    numero INT DEFAULT 0 CHECK (numero >= 0 and numero <= 5),
+    ELocal VARCHAR2(3),
+    EVisitante VARCHAR2 (3),
+    FOREIGN KEY (ELocal,EVisitante) REFERENCES encuentros(ELocal,EVisitante),
+    PRIMARY KEY (codJ,ELocal,EVisitante)
+
+);
+
+--drop TABLE equipos;
+DESCRIBE equipos;
+DESCRIBE jugador;
+DESCRIBE encuentros;
+DESCRIBE faltas;
+
+
+
+

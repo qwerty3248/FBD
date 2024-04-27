@@ -1,0 +1,88 @@
+Nombre ¿Nulo?   Tipo         
+------ -------- ------------ 
+CODPRO NOT NULL VARCHAR2(3)  
+NOMPRO NOT NULL VARCHAR2(30) 
+STATUS          NUMBER       
+CIUDAD          VARCHAR2(15) 
+Nombre ¿Nulo?   Tipo         
+------ -------- ------------ 
+CODPIE NOT NULL VARCHAR2(3)  
+NOMPIE NOT NULL VARCHAR2(30) 
+CIUDAD          VARCHAR2(15) 
+COLOR           VARCHAR2(10) 
+PESO            NUMBER(5,2)  
+Nombre ¿Nulo?   Tipo         
+------ -------- ------------ 
+CODPJ  NOT NULL VARCHAR2(3)  
+NOMPJ  NOT NULL VARCHAR2(20) 
+CIUDAD          VARCHAR2(15) 
+Nombre   ¿Nulo?   Tipo        
+-------- -------- ----------- 
+CODPRO   NOT NULL VARCHAR2(3) 
+CODPIE   NOT NULL VARCHAR2(3) 
+CODPJ    NOT NULL VARCHAR2(3) 
+CANTIDAD          NUMBER(4)  
+
+
+codigo 
+CREATE TABLE proveedor(
+    codPro VARCHAR2(3) PRIMARY KEY,
+    nomPro VARCHAR2(30) NOT NULL,
+    status NUMBER CHECK (status >= 1 and status <= 10),
+    ciudad VARCHAR2(15)   
+    );
+CREATE TABLE piezas(
+    codPie VARCHAR2(3) PRIMARY KEY,
+    nomPie VARCHAR2(30) NOT NULL,
+    --status NUMBER CHECK (status >= 1 and status <= 10)
+    color VARCHAR2(10),
+    peso NUMBER(5,2) CHECK (peso > 0 and peso <= 100),
+    ciudad VARCHAR2(15)
+     );    
+CREATE TABLE proyectos(
+    codPj VARCHAR2(3) PRIMARY KEY,
+    nomPj VARCHAR2(20) NOT NULL,
+    --status NUMBER CHECK (status >= 1 and status <= 10),
+    ciudad VARCHAR2(15)
+    );    
+
+CREATE TABLE ventas(
+    codPro REFERENCES proveedor(codPro),
+    codPie REFERENCES piezas(codPie),
+    codPj REFERENCES proyectos(codPj),
+    cantidad NUMBER(4),
+    PRIMARY KEY (codPro,codPie,codPj));
+    --defino al final del todo si la restriccion afecta a mas de uno
+    
+--describe proveedor
+--drop TABLE piezas
+--describe piezas
+--describe proyectos
+describe ventas
+-- PROVEEDORES
+INSERT INTO proveedor VALUES ('S1','JOSE FDEZ',2,'MADRID');
+INSERT INTO proveedor VALUES ('S2','MANUEL VIDAL',1,'LONDRES');
+INSERT INTO proveedor VALUES ('S3','LUISA GOMEZ',3,'LISBOA');
+INSERT INTO proveedor VALUES ('S4','PEDRO SANCHEZ',4,'PARIS');
+INSERT INTO proveedor VALUES ('S5','MARIA REYES',5,'ROMA');
+INSERT INTO proveedor VALUES ('S6','JOSE PEREZ',6,'BRUSELAS');
+INSERT INTO proveedor VALUES ('S7','LUISA MARTIN',7,'ATENAS');
+--PIEZA
+INSERT INTO piezas VALUES ('P1','TUERCA','GRIS',2.5,' MADRID');
+INSERT INTO piezas VALUES ('P2','TORNILLO','ROJO',1.25,'PARIS');
+INSERT INTO piezas VALUES ('P3','ARANDELA','BLANCO',3,'LONDRES');
+INSERT INTO piezas VALUES ('P4','CLAVO','GRIS',5.5,'LISBOA');
+INSERT INTO piezas VALUES ('P5','ALCAYATA','BLANCO',10,'ROMA');
+--PROYECTOS
+INSERT INTO proyectos VALUES ('J1','PROYECTO 1','LONDRES');
+INSERT INTO proyectos VALUES ('J2','PROYECTO 2','LONDRES');
+INSERT INTO proyectos VALUES ('J3','PROYECTO 3','PARIS');
+INSERT INTO proyectos VALUES ('J4','PROYECTO 4','ROMA');
+--VENTAS
+insert into ventas (SELECT codpro, codpie, codpj, cantidad FROM opc.ventas);
+
+SELECT * FROM proveedor;
+SELECT * FROM piezas;
+SELECT * FROM proyectos;
+SELECT * FROM ventas;
+commit; --para dejar las filas en el buffer  

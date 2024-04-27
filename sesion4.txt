@@ -1,0 +1,102 @@
+--Tipo date 
+--La fecha la trata como un entero, esto lo hace muy rapido
+--Funcion TO_CHAR(fecha,<'aqui se introduce el fromato entre comillas'>)
+--Poner dias:
+--d: 1-7
+--dd: 1-31
+--day: lunes,martes...
+--Day: Lunes,Martes...
+--DAY: LUNES,MARTES..
+--Poner Meses:
+--mm: 1-12
+--month: enero,febrero...
+--Month: Enero,Febrero...
+--MONTH: ENERO,FEBREO...
+--Para el año:
+--YY: 2 digitos
+--YYYY: 4 digitos
+--year: Con letras
+--Separadores: - , ; : /
+
+--Con TO_DATE() se lee las fechas, convierte string de fecha a fecha(date)
+
+
+select codpie,codpj,cantidad,to_char(fecha,'Day, dd "de" Month "de" yyyy') 
+from ventas;
+
+--Que pedidos se han hecho en el mes de marzo de 2015
+select codpie,codpj, cantidad,to_char(fecha,'dd/mm/yyyy') from ventas 
+where to_char(fecha, 'mm') = '03' and to_char(fecha, 'yyyy')='2015';
+
+select codpie,codpj, cantidad,to_char(fecha,'dd/mm/yyyy') from ventas 
+where fecha between to_date('5/2004','mm/yyyy') and to_date('5/2020','mm/yyyy');
+
+--Pedidos que se han hecho en los ultimos 15 dias
+select codpie,codpj, cantidad,to_char(fecha,'dd/mm/yyyy') from ventas 
+where fecha between sysdate-700 and sysdate;
+
+--Insertando fecha con otro formato
+insert into ventas values ('S7','P3','J3',5000,to_date('23-04-1802','dd-mm--yyyy'),null);
+
+--to_date('23-04-1802','dd-mm--yyyy');
+
+--Muestra los pedidos que tengan piezas grises
+select * from piezas p,ventas v where p.codpie = v.codpie 
+and UPPER (p.color) = 'GRIS'; 
+
+select * from ventas where codpie 
+in (select codpie from piezas where UPPER (piezas.color) = 'GRIS' );
+
+--Pedido que suministra el mayor numero de unidades
+
+select * from ventas where cantidad <> all (select cantidad from ventas); 
+
+--proveedor que vivan en una ciudad donde no hay ningun proyecto
+select * from proveedor where ciudad not in (select ciudad from proyectos);
+
+--Funcion de agregacion, permite calcular un funcion aritmetica, normalmente de 
+--origen estadistico sobre una columna 
+-- sum(cantidad),max(...),min(...),avg(...),stddev(...),count(...)
+--count tiene 3 formas
+--count(*)= numero de filas de la consulta
+--count(<nombre columna>)= numero de filas de la consulta sin el nulo pero cuenta los repes
+--count(distinct <nombre columnas>)= numero de filas de la consulta sin el nulo ni repetidos  
+
+--Numero de alumnos matriculados en la asignatura BD1
+select count(*) from matriculas where UPPER(codasi#)='BD1';
+
+--Filas de matriculas
+--Valores de la columna notas sin nulos
+--Valores de la columna notas diferentes
+SELECT count(*) from matriculas;
+select count(notas) from matriculas;
+select count(DISTINCT notas) from matriculas;
+
+ --DNI de los alumons cuya nota supera a la nota media del resto
+ select dni from alumnos where nota > (select AVG(nota) from matriculas);
+
+--Alumnos que superan la nota media de bd1 en su mismo grupo en el 2014-2015
+
+select dni from matriculas where UPPER(codasi#) = 'BD1' and curso_academico = '2014-2015'
+and notas > (select avg(notas) from matriculas where UPPER(codasi#) = 'BD1' 
+and curso_academico = '2014-2015');
+
+--Asignatura con el mayor numero de creditos
+select asi# from asignaturas where credt+credpr = ((select max(credpr) from asignaturas) 
++ (select max(credt) from asignaturas));
+
+--Alumnos matriculados en bd1 alguna vez, contarlos
+select count(distinct dni) from matriculas where UPPER(codasi#) = 'BD1';
+
+--Datos completos de los alumnos que nunca se han matriculado de la asignatura TA
+select * from alumnos where dni not in (select dni from matriculas where UPPER(codasi#) = 'TA')
+
+--Ejercicios de cuaderno: 3.12,3.15,3.16,3.18,3.22,3.23,3.26,3.28,3.29
+
+
+--select *from ventas;
+--describe asignaturas;
+--commit ;
+--rollback; 
+
+

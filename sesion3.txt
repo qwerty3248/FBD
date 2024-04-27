@@ -1,0 +1,64 @@
+--Producto cartesiano
+-- las letras son el alias de la tabla qu se ponen asi
+SELECT * FROM alumnos a, matriculas m WHERE a.dni = m.dni;
+
+SELECT ape1,ape2,nombre FROM alumnos a WHERE UPPER (a.provincia) = 'SEVILLA' and 
+UPPER (a.nombre) = 'ADELA' AND UPPER (a.beca) = 'SI' and a.edad > 15; 
+
+-- dni. ape1, ape2, nombre de alumnos matriculados en 'bd1'(cod_asig) sin beca
+--y que haya sacado más de un 7
+--distinct si sale muchas veces 
+--Buscar siempre enlace de externas a primarias son los atributos comunes para que 
+--lo que saque tenga coherencia
+SELECT distinct a.dni,a.ape1,a.ape2,a.nombre FROM alumnos a, matriculas m, asignaturas asi WHERE a.dni=m.dni and 
+UPPER(a.beca) = 'NO' and m.codasi# = asi.asi# and asi.curso=2 AND a.nota > 7; 
+--La misma consulta de arriba pero sin hacer 3 productos cartesianos
+SELECT distinct a.dni,a.ape1,a.ape2,a.nombre FROM alumnos a, matriculas m WHERE a.dni=m.dni and 
+UPPER(a.beca) = 'NO' and m.codasi# in (select asi# from asignaturas where asignaturas.curso=2) AND a.nota > 7; 
+--Parejas de alumnos matriculados de la misma asignatura en el mismo curso
+SELECT distinct m.dni, l.dni FROM matriculas m , matriculas l where 
+l.curso_academico = m.curso_academico and l.codasi# = m.codasi# and m.dni<>l.dni
+and l.dni < m.dni; 
+
+--alumons que este matriuclados de 2 o más asignaturas en 2014-2015, mostrar
+-- nombre y apellidos
+SELECT nombre,ape1,ape2 from alumnos where dni in 
+(SELECT m.dni FROM matriculas m, matriculas l where
+m.dni = l.dni and m.curso_academico = '2014-2015' and 
+l.curso_academico ='2014-2015' and m.codasi# <> l.codasi#);
+
+--oeperadores de conjuntos
+--union: t1 u t2 = t3 union de 2 conjuntos 
+--interseccion: t1 U(a la -1) t2 = t3, las filas comunes de t1 y t2 en t3 
+--Diferencia: t1 - t2 = t3 ,t3 tiene las filas de t1 que no estan en t2 
+--Tienen que tener las mismas columnas y mismo significado y mismo longtid de datos
+--ademas de tipo de dato
+--Si las columnas no son iguales se pone en t3 la columna de t1
+-- Esto es la union:SELECT union select
+--intersect es la intesecion
+--minus la diferencia 
+--Proveedores que han vendido piezas p1 y p4  en cantidades superiores a 100 unidades
+--Sin intersecion
+SELECT codpro from proveedor where codpro in(
+SELECT codpro from ventas where (UPPER(ventas.codpie) = 'P1' or UPPER(ventas.codpie) = 'P4')
+AND ventas.cantidad > 100
+);
+--Con intersecion
+SELECT codpro from proveedor INTERSECT SELECT codpro from ventas where (UPPER(ventas.codpie) = 'P1' or UPPER(ventas.codpie) = 'P4')
+AND ventas.cantidad > 100;
+
+--SELECT * FROM ventas;
+--alumons que nunca se han matriculado en ingles uno, (nombre asig)
+
+SELECT dni from alumnos minus select a.dni from alumnos a, matriculas m where
+a.dni = m.dni and m.codasi# in (select asi# from asignaturas where UPPER(nombreas) = 'INGLES I');
+
+--alumons de jaen que se hayan matriculado de alguna asignatura en el curso 2016-2017
+-- y no se hayan matriculado en ningun otro curso academico
+ 
+
+
+describe ventas;
+
+--commit 
+--rollback

@@ -1,0 +1,71 @@
+--la sesion2 apartir de aqui
+--ALTER TABLE, UPDATE TABLE Y DELETE TABLE
+--ALTER TABLE ventas ADD (<columna nueva> <tipo de dato> <valor default/clausula>) 
+--DEFAULT para poner algo por defecto en el default dentro va con ,
+--date formato es 'dd/mm/aa' 
+
+ALTER TABLE ventas ADD(fecha date DEFAULT sysdate,fecha_entr date);
+SELECT * FROM ventas;
+--Comando DELETE <tabla> where (condicion);
+DELETE ventas WHERE codpro='S2';
+DELETE ventas WHERE cantidad BETWEEN 1000 AND 2000;
+DELETE ventas WHERE codpro IN (SELECT codpro FROM proveedor WHERE status>2);
+DELETE ventas;
+--rollback es para que vuelva atras, un undo hasta el ultimo commit 
+--Si te euivocas en update, delete, 
+DESCRIBE opc.ventas;
+DESCRIBE ventas;
+insert into ventas (SELECT codpro, codpie, codpj, cantidad , fecha , fech_entr FROM opc.ventas);
+
+--update ventas set 
+--para poner los valores es con set
+
+UPDATE ventas SET fecha_ent=fecha_ent+15 WHERE cantidad>1000;
+
+--Regalar 10 unidades a todos los pedidos de piezas fabricadas en Londres en 
+-- mas de 500 unidades
+
+UPDATE ventas SET cantidad=cantidad+10 WHERE codpie IN (SELECT codpie FROM piezas WHERE ciudad='LONDRES');
+
+--               Proyeccion                                              Seleccion
+--SELECT <lista de cosas a mostrar> FROM <lista de tablas a usar> WHERE (condicion) 
+--Opciones: * (todas).
+--Asi nos llevamos una tabla de otro sitio
+CREATE TABLE alumnos AS (SELECT * FROM opc.alumnos);
+CREATE TABLE asignaturas AS (SELECT * FROM opc.asigna);
+CREATE TABLE matriculas AS (SELECT * FROM opc.matricula);
+
+-- clausula LIKE
+describe alumnos;
+--Alumnos cuyo primer apellido empieze por la p
+-- WHERE APE1 LIKE 'p%' o '%p%' o '%p' al principio o en el medio o al final
+--       Aqui metemos antes la funcion UPPER para ponerlo a mayusculas a la comparacion
+-- tambien podemos poner LOWER
+--SELECT * FROM alumnos  WHERE UPPER (ape1) LIKE 'A%'; 
+
+--Se pueden sumar columnas y poner sus numeros
+--muestrame los DNIS de los alumnos sin nota en el bd1
+-- is null para nulos, is not null
+SELECT dni From matriculas WHERE notas is null and UPPER(codasi#)='BD1';
+
+--Proyectar la procedencia de los alumnos pero evitando resultados duplicados
+--Se hace con distinct
+Select DISTINCT provincia from alumnos ;
+
+--ordenar resultados de una consulta a nuestro gusto con ORDER BY,
+--orden descendente desc detras del nombre CRECIENTE por defecto
+Select nombre,nota from alumnos ORDER BY nota; --DESC;
+Select nombre from alumnos ORDER BY nombre DESC;
+--la columna debe aparecer que la selecciona, es decir lo de arriba. 
+
+--EJERCICIOS
+--LISTA PROVEEDORES QUE TENGAN UNA E EN SU NOMBRE Y QUE TRABAJEN EN UNA CIUDAD EN
+-- LA QUE SE FABRIQUE ALGUNA PIEZA
+
+SELECT nomPro FROM proveedor WHERE UPPER(nompro) LIKE '%E%' and ciudad in (SELECT ciudad FROM piezas);
+
+
+-- PIEZAS QUE PESEN MAS DE 5 GRAMOS Y QUE HAYA SIDO POR S1
+SELECT codpie FROM piezas WHERE peso > 5 and codpie in (Select codpie FROM ventas where codpro='S1');
+
+commit; --para dejar las filas en el buffer  
