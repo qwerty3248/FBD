@@ -1,0 +1,88 @@
+create table Clase(
+    nomClase varchar2(25) PRIMARY KEY check (nomClase 
+    in ('Goleta', 'Carabela','Fragata','Galeón')),
+    tipo varchar2(15),
+    NCanones NUMBER default 4 check (NCanones >= 4 and  NCanones <= 16),
+    calibre NUMBER,
+    tonelaje NUMBER not null
+
+);
+create table Barcos(
+    nomBarco varchar2(25) PRIMARY KEY,
+    nomClase REFERENCES Clase(nomClase),
+    fechacons date default sysdate not null,
+    pais varchar2(15) not null
+
+);
+create table Batalla(
+    nomBatalla  varchar2(25) PRIMARY KEY,
+    localizacion varchar2(15) not NULL
+
+);
+create table Participa(
+    nomBatalla REFERENCES Batalla(nomBatalla),--varchar2(25),
+    nomBarco references Barcos(nomBarco),--varchar2(25),
+    estado varchar2(11) not null check (estado in ('Hundido','Indemne','Perjudicado')),
+    --FOREIGN key (nomBatalla) REFERENCES Batalla(nomBatalla),
+    --FOREIGN key (nomBarco) references Barcos(nomBarco),
+    PRIMARY KEY (nomBatalla,nomBarco)
+     
+
+);
+--drop table clase;
+describe barcos;
+describe batalla;
+describe participa;
+describe clase;
+
+--Las pruebas estan hechas con las tablas rellenas de opc
+
+--Goletas que participaron en una sola batalla 
+--Probarlo cuando me vaya la VPN, estos son los que han participado en 2 o mas
+--batallas queda hacerle la diferencia
+select nomBarco from opc.barcos where 
+(UPPER(nomClase) = 'GOLETA' and nomBarco in 
+(select nomBarco from opc.participa minus 
+select p1.nomBarco from opc.participa p1 ,opc.participa p2 where
+(p1.nomBarco = p2.nomBarco) and p1.nomBatalla <> p2.nomBatalla));
+
+--Mostrar los datos completos de las batallas localizadas en el Pacífico 
+--en las que participaron todos los barcos de más de 10 cañones
+select * from opc.batalla where upper(localizacion) = 'PACÍFICO' and nomBatalla in
+(select nomBatalla from opc.Participa where (nomBarco in 
+(select nomBarco from opc.Barcos where nomClase in 
+(select nomClase from opc.Clase where (NCanones > 10)))));
+
+--Mostar las batallas en las que se hundieron más de 10 barcos
+
+--select nomBarco from participa where UPPER(estado) = 'HUNDIDO' 
+--GROUP BY nomBarco having count(*) > 10;--Los barcos que se han hundido 
+--y luego ordenamos por esos barcos y miramos que sean mayor que diez
+--select nomBatalla from participa where nomBarcos in 
+--(select nomBarco from participa where UPPER(estado) = 'HUNDIDO' 
+--GROUP BY nomBarco having count(*) > 10);--Batallas en las que participaron estos 
+--barcos
+select nomBatalla from opc.participa where (nomBatalla in (select nomBatalla from opc.participa where nomBarco in 
+(select nomBarco from opc.participa where UPPER(estado) = 'HUNDIDO' 
+GROUP BY nomBarco having count(*) > 10)));
+--Las batallas en la que se hundieron más de 10 barcos
+
+--Crear una vista que muestre el número de barcos construidos por cada país cada
+--año
+select pais, TO_CHAR(fechacons,'YYYY') as año,count(*) as numero_de_barcos from opc.barcos
+group by pais, TO_CHAR(fechacons,'YYYY') order by pais,año;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

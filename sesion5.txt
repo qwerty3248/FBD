@@ -1,0 +1,41 @@
+-- ! Division
+
+--TODO Encontrar los alumnos matriculados de todas las asignaturas de segundo
+--? Divisor
+select asi# from asigna where curso = 2;
+--? Dividendo
+select codasi# from matricula where DNI = 24284256;
+
+--? Operador: Restar las tablas y comprobar si la tabla está vacia(NOT EXISTS)(se puede utilizar EXITS para consultas ej "Se ha realizado alguna venta"), si está vacia se muestra en el resultado.
+select DISTINCT DNI from alumnos a where NOT EXISTS(select asi# from asigna where curso = 2 MINUS select codasi# from matricula m where a.DNI = m.DNI);
+--! IMPORTANTE: Ultima selección where
+
+--TODO Encontrar los alumnos matriculados de todas asignaturas de segundo en el mismo curso academico
+--? Dividendo
+select DNI, curso_academico from matricula m1
+
+--? Divisor 
+select asi# from asigna where curso = 2;
+
+--? Operador:
+select DISTINCT DNI,curso_academico from matricula m1 where NOT EXISTS(select asi# from asigna where curso = 2 MINUS select codasi# from matricula m2 where m1.DNI = m2.DNI and m1.curso_academico = m2.curso_academico);
+
+-- ? En problemas que te pidan un objeto ligado a otros objetos
+--? Cuaderno pag 43, Libro 244-246
+--! ------------------------EJERCICIOS-------------------------
+
+--TODO Asignaturas que tienen o han tenido matriculados a todos loas alumnos de Almeria
+select asi#,nombreas from asigna a where not exists (select DNI from alumnos a1 where provincia = 'Almeria' minus select m.codasi# from matricula m where a.asi# = m.codasi#);
+--TODO Alumnos que han aprobado todas las asignaturas del grado en Informatica
+select ape1,ape2,nombre from alumnos al where not exists (select a.asi# from asigna a where curriculum = 'Grado Informática' minus select m.codasi# from matricula m where al.dni = m.dni and notas >= 5);
+--TODO Alumnos becarios matriculados de todas las asignaturas de mas de 6 creditos
+select ape1, ape2, nombre from alumnos al where not exists (select a.asi# from asigna a where credt+credpr>6 MINUS select m.codasi# from matricula m where al.DNI = m.dni and al.beca = 'si');
+--TODO Asignaturas que, en el mismo curso academico han tenido matriculados a todos los alumnos mayores de 30 años
+select m.codasi#,m.curso_academico from matricula m where not exists (select a.DNI from alumnos a where edad > 30 minus select DNI from matricula m1 where m.codasi# = m1.codasi# and m.curso_academico = m1.curso_academico);
+--TODO Encontrar las asignaturas de mas de 5 creditos que en el mismo curso academico han tenido matriculados a todos los alumnos mayores de 30 años;
+select m.codasi#,m.curso_academico from matricula m where not exists (select a.DNI from alumnos a where edad > 30 minus select DNI from matricula m1 where m.codasi# = m1.codasi# and m.curso_academico = m1.curso_academico) and codasi# in (select asi# from asigna where credt+credpr>5);
+--TODO Proveedores que han hecho ventas todos los años
+select * from proveedor p where not exists(select distinct to_char(v.fecha,'yyyy') from ventas v minus select to_char(v1.fecha,'yyyy') from ventas v1 where v1.codpro = p.codPro);
+
+--TODO vendedores que han vendido el mismo año todas las piezas de color blanco
+--TODO 3.46 3.48 3.54 3.69

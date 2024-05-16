@@ -93,6 +93,23 @@ select * from alumnos where dni not in (select dni from matriculas where UPPER(c
 
 --Ejercicios de cuaderno: 3.12,3.15,3.16,3.18,3.22,3.23,3.26,3.28,3.29
 
+--3.12 pongamos que la ciudad es LONDRES
+
+
+select codpro,codpie,codpj from ventas where cantidad >= 1 and codpro 
+in(select codpro from proveedor where upper (ciudad) = 'LONDRES') AND 
+codpie in (select codpie from piezas where upper(ciudad) = 'LONDRES') and
+codpj in (select codpj from proyectos where upper(ciudad) = 'LONDRES');
+
+--3.15
+select codpie from piezas where codpie in (select codpie from ventas where
+codpro in (select codpro from proveedor where upper(ciudad) = 'MADRID'));
+
+--3.16
+select ciudad, codpie from piezas where codpie in (select codpie 
+from proyectos p, proveedor pj where  p.ciudad = pj.ciudad);
+
+
 
 --select *from ventas;
 --describe asignaturas;
