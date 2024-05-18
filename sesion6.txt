@@ -1,0 +1,68 @@
+-- !Vistas Catalogo
+
+-- ? Vista: Le asigna un nombre a una consulta para poder (create view "nombre" as) en el sistema se queda almacenado el nombre de la vista y el select como si fuera una tabla
+-- ! Hay que ponerle alias a todas las columnas con atributos que no tienen nombre
+-- ! Solo se puede utilizar para consultar
+
+-- ? Condiciones para insertar en una vista
+-- ? 1. Contener PK, CC,not null
+-- ? 2. Sin agregadores ni group by
+-- ? 3. La vista solo puede tener una tabla en from
+
+--! WITH CHECK OPTION Limita que la insercciones sean pertenecientes a esa lista.
+
+--! Replace view: Si existe la vista, la sustituye;
+
+--! Se puede crear el nombre de las columnas al crear la vista CREATE VIEW "nombre" ("nombres columnas");
+
+-- TODO 4.2
+
+-- !Catalogo: Agenda que utiliza el sistema para llevar el control  
+-- ? DBA_TABLES Muestras las tablas del sistema
+-- ? USER_TABLES Tabla con las tablas creadas por el usuario en el nivel interno.
+-- ? USER_TAB_COLUMNS Tabla con las tablas creadas por el usuario y los atributos con nombre en el nivel conceptual.
+--? ALL_TABLES Muestra todas las tablas a las que tengo derecho de acceso
+    select TABLE_NAME, OWNER from ALL_TABLES;
+    --TODO Ver la estructura de la tabla de ventas.
+    select * from USER_TAB_COLUMNS where TABLE_NAME = 'VENTAS';
+
+--? DBA_VIEWS Muestra las vistas
+--? USER_VIEWS (IMPORTANTE solamente las 3 primeras)
+select * from user_views;
+
+--? DBA_CONSTRAINTS Muestra las restricciones
+select * from user_constraints;
+
+--! P: Clave Primaria
+--! U: Clave candidata
+--! R: Clave Externa
+--! C: Check
+
+--? Gestion de privilegios
+--! TIPOS:
+--!  -Sobre objetos:Solo los puede conceder el propietario de un objeto
+--!     Se conceden mediante GRANT "privilegios" ON "nombre_tabla" TO "nombreUsuario"
+--? prilegios
+Insert:
+Update:
+Delete:
+Select:
+References: Permite que pueda crear una clave externa que referience a la tabla
+All Privileges:
+--? Nombre usuario:
+    public: a todos
+    user: a un usuario
+    user with grant option: a un usuario 
+--! Elimina los permisos con REVOKE FROM (se quita en casacada)
+
+--!  -De sistema: Administrador base de datos
+--!     Se concede mediante GRANT "privilegios" TO "nombreUsuario"
+--? privilegios
+create table: tambien se asigna alter y drop
+create index
+create view
+create cluster
+--? nombreUsuario
+    public: a todos
+    user: a un usuario
+    user with grant option: a un usuario 
