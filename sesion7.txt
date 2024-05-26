@@ -1,0 +1,49 @@
+--! Indices
+
+--TODO Indices de arbol
+CREATE INDEX ap1_ndx ON alumnos(ape1);
+CREATE INDEX ap1_ndx ON alumnos(ape1,ape2,nombre);
+--? Ordena por el primer apellido, cuando hay empate, ordena por el segundo apellido, cuando hay empate, ordena por nombre.
+--? Eficiente para las consultas ape1, ape1 and ape2, ap1 and ape2 and nombre
+SELECT * FROM USER_INDEXES
+
+--TODO Indices invertidos
+CREATE INDEX rev_ndx ON matricula(DNI) REVERSE;
+
+--! EL orden por defecto es de menor a mayor, para invertirlo se puede poniendo al final de las sentencias DESC;
+
+--TODO Mapa de bits
+CREATE BITMAP INDEX color_ndx ON piezas(color);
+
+--TODO IOT (Guarda fisicamente las tuplas por memoria ordenadas por clave primaria)
+CREATE TABLE piezas_IOT() ORGANIZATION INDEX;
+
+--!Clusters 
+
+--! En las mismas paginas de fichero se meten registros de diferentes tablas, sufre las consultas de la tabla que mete menos tuplas
+
+--? 1. Crear el cluster, prepara un formato de pagina diferente al de create en el se especifica el tipo) (INTERARCHIVO)
+CREATE CLUSTER prov_vta(campo_cl VARCHAR2(3));
+
+--? 2. Se crean las tablas y se asignan al cluster y que atributo se va a asignar en la clave del cluster
+CREATE TABLE proveedor2(
+    CodPro VARCHAR2(3) PRIMARY KEY,
+    NomPro VARCHAR2(30),
+    Status NUMBER,
+    Ciudad VARCHAR2(15)
+) CLUSTER prov_vta(CodPro);
+
+CREATE TABLE Ventas2(
+    CodPro VARCHAR2(3) REFERENCES Proveedor2(codPro),
+    CodPrj REFERENCES Proyectos(codPj),
+    CodPie REFERENCES piezas(codPie),
+    Cantidad NUMBER(4),
+    PRIMARY KEY (CodPro,CodPrj,CodPie)
+) CLUSTER prov_vta(CodPro);
+
+--? 3. Crear el indice por clave primaria
+CREATE INDEX prov_vta_ndx ON CLUSTER prov_vta;
+
+--! ELIMINAR CLUSTER
+1.BORRAR PRIMERO LAS TABLAS 
+2. DROP CLUSTER prov_vta INCLUDING TABLES;

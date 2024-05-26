@@ -69,20 +69,14 @@ GROUP BY nomBarco having count(*) > 10)));
 
 --Crear una vista que muestre el número de barcos construidos por cada país cada
 --año
-select pais, TO_CHAR(fechacons,'YYYY') as año,count(*) as numero_de_barcos from opc.barcos
+--select pais, TO_CHAR(fechacons,'YYYY') as año,count(*) as numero_de_barcos from opc.barcos
+--group by pais, TO_CHAR(fechacons,'YYYY') order by pais,año;
+
+create view Vista_barcos as  select pais, TO_CHAR(fechacons,'YYYY') as año,count(*) as numero_de_barcos from opc.barcos
+
 group by pais, TO_CHAR(fechacons,'YYYY') order by pais,año;
 
-
-
-
-
-
-
-
-
-
-
-
+--select * from Vista_barcos;
 
 
 
